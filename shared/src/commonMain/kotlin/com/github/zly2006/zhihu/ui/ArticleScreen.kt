@@ -60,7 +60,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -132,6 +131,7 @@ import com.github.zly2006.zhihu.reading.TtsState
 import com.github.zly2006.zhihu.reading.rememberArticleSpeechToggler
 import com.github.zly2006.zhihu.reading.rememberArticleTtsState
 import com.github.zly2006.zhihu.theme.DUO3_TIQIAN_MARKDOWN_PREFERENCE_KEY
+import com.github.zly2006.zhihu.theme.PREF_FONT_SIZE
 import com.github.zly2006.zhihu.ui.article.ANSWER_DOUBLE_TAP_ACTION_PREFERENCE_KEY
 import com.github.zly2006.zhihu.ui.article.ARTICLE_USE_WEBVIEW_PREFERENCE_KEY
 import com.github.zly2006.zhihu.ui.article.AigcFlagSheet
@@ -223,6 +223,7 @@ fun ArticleScreen(
 
     val scrollState = rememberScrollState()
     val settings = koinInject<SettingsStore>()
+    val fontSizePercent by rememberObservedSetting(settings, PREF_FONT_SIZE) { getInt(PREF_FONT_SIZE, 100) }
     val history = koinInject<HistoryStorage>()
     val contentOpens = koinInject<ContentOpenTracker>()
     val aigcVote = koinInject<AigcVoteService>()
@@ -612,11 +613,11 @@ fun ArticleScreen(
                             title = { expanded ->
                                 Text(
                                     text = viewModel.title,
-                                    style = if (expanded && article.type == ArticleType.Answer) {
-                                        MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
-                                    } else {
-                                        LocalTextStyle.current
-                                    },
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontSize = 18.sp * fontSizePercent / 100,
+                                        lineHeight = 26.sp * fontSizePercent / 100,
+                                        fontWeight = if (expanded && article.type == ArticleType.Answer) FontWeight.Bold else FontWeight.Medium,
+                                    ),
                                     modifier = Modifier
                                         .padding(if (expanded) PaddingValues(end = 16.dp, bottom = 8.dp) else PaddingValues())
                                         .let {

@@ -82,6 +82,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fleeksoft.ksoup.Ksoup
 import com.github.zly2006.zhihu.data.DataHolder
@@ -100,6 +101,7 @@ import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.platform.rememberUserMessageSink
 import com.github.zly2006.zhihu.platform.rememberZhihuWebUrlOpener
 import com.github.zly2006.zhihu.reading.RegisterReadingQueueSource
+import com.github.zly2006.zhihu.theme.PREF_FONT_SIZE
 import com.github.zly2006.zhihu.ui.components.FeedCard
 import com.github.zly2006.zhihu.ui.components.PaginatedList
 import com.github.zly2006.zhihu.ui.components.ProgressIndicatorFooter
@@ -107,6 +109,7 @@ import com.github.zly2006.zhihu.ui.components.ShareDialog
 import com.github.zly2006.zhihu.ui.components.getShareText
 import com.github.zly2006.zhihu.ui.components.handleShareAction
 import com.github.zly2006.zhihu.ui.components.pageTurnViewportWithGuide
+import com.github.zly2006.zhihu.ui.components.rememberObservedSetting
 import com.github.zly2006.zhihu.ui.components.rememberPageTurnTarget
 import com.github.zly2006.zhihu.ui.components.rememberShareActionExecutor
 import com.github.zly2006.zhihu.viewmodel.ArticleAnswerSwitchState
@@ -376,6 +379,8 @@ private fun QuestionTopBar(
     onShare: () -> Unit,
     canShare: Boolean,
 ) {
+    val settings = koinInject<SettingsStore>()
+    val fontSizePercent by rememberObservedSetting(settings, PREF_FONT_SIZE) { getInt(PREF_FONT_SIZE, 100) }
     TopAppBar(
         title = {
             AnimatedContent(
@@ -388,6 +393,10 @@ private fun QuestionTopBar(
             ) { shouldShowTitle ->
                 Text(
                     text = if (shouldShowTitle) title else "问题",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp * fontSizePercent / 100,
+                        lineHeight = 26.sp * fontSizePercent / 100,
+                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -422,12 +431,17 @@ private fun QuestionHeaderSection(
     followerCount: Int,
     onShowComments: () -> Unit,
 ) {
+    val settings = koinInject<SettingsStore>()
+    val fontSizePercent by rememberObservedSetting(settings, PREF_FONT_SIZE) { getInt(PREF_FONT_SIZE, 100) }
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (title.isNotBlank()) {
             SelectionContainer(modifier = Modifier.questionSelectionWorkaround()) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 18.sp * fontSizePercent / 100,
+                        lineHeight = 26.sp * fontSizePercent / 100,
+                    ),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.testTag(QUESTION_TITLE_TAG),
                 )

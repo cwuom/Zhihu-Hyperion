@@ -78,6 +78,8 @@ URL 解析集中在 `resolveContent()`。支持知乎问题、回答、文章、
 
 文章、问题详情和想法正文会根据 `ARTICLE_USE_WEBVIEW_PREFERENCE_KEY` 在 WebView 与 Compose Markdown 之间切换；该常量当前值是 `webviewRender`。WebView 正文渲染只作为废弃路径保留，不再接受新功能；阅读体验新能力只接入 Compose Markdown 路径。Compose Markdown 路径依赖 `RenderMarkdown` 和 `SegmentedText` 的字号、行高和段间距设置。
 
+详情页标题默认使用 18sp 字号和 26sp 行高，并随 `contentFontSize` 按比例缩放。问题正文标题和展开的回答标题保留加粗、完整换行；收起后的工具栏标题保留原有单行省略显示。
+
 ## 设置项影响图
 
 ### 外观与阅读体验
@@ -89,7 +91,7 @@ URL 解析集中在 `resolveContent()`。支持知乎问题、回答、文章、
 | `customThemeColor` | 自定义主题色 | Material 3 主色 | 不要和动态取色同时假设生效 |
 | `backgroundColorLight`, `backgroundColorDark` | 自定义背景颜色 | 明暗模式背景 | 按当前明暗模式写入不同 key |
 | `disableBottomSheetRoundedCorners` | 禁用 popup 圆角 | `MyModalBottomSheet` 顶部改为直角 | 默认关闭，统一影响评论等复用 popup |
-| `contentFontSize`, `contentLineHeight`, `contentBlockSpacing` | 字号、行高、段间距 | 正文字号/行高、分段文本样式和 Markdown 正文块间距 | 查 `SegmentedText` 和 Markdown 渲染路径 |
+| `contentFontSize`, `contentLineHeight`, `contentBlockSpacing` | 字号、行高、段间距 | 正文与详情标题字号、正文行高、分段文本样式和 Markdown 正文块间距 | 查 `SegmentedText` 和 Markdown 渲染路径 |
 | `liquidGlass` | 液态玻璃 | 主壳底栏换成悬浮的 `LiquidGlassTabBar`，回答页 `BottomFloatingToolbar` 换成玻璃底板 | 常量与默认值在 `:core:glass`：只有 iOS 默认开启；只在 `isLiquidGlassSupported`（Android 13+、iOS、macOS、桌面）时显示开关；随平台调整默认值，不进 WebDAV 同步 |
 | `showFeedThumbnail` | Feed 卡片缩略图 | 信息流卡片是否显示图 | 由复用 `FeedCard` 的页面读取 |
 | `showRefreshFab` | 刷新 FAB | 首页/列表可拖动刷新按钮显示 | 123Duo3 总开关会关闭它 |
