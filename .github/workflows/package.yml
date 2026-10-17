@@ -349,8 +349,6 @@ jobs:
           # Kotlin/Native release linking runs in Gradle's JVM; keep its peak memory within this runner's RAM.
           GRADLE_OPTS: >-
             -Dorg.gradle.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
-            -Dorg.gradle.workers.max=1
-            -Dorg.gradle.parallel=false
         run: iosApp/scripts/package-ios.sh device dist/zhihu-hyperion-ios-arm64-unsigned.ipa
 
       - name: Upload iOS package
