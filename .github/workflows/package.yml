@@ -327,7 +327,8 @@ jobs:
 
   ios:
     name: iOS unsigned IPA
-    runs-on: macos-15
+    # Release linking exhausted the 5 GiB heap on the 7 GB ARM runner; Intel runners provide 14 GB.
+    runs-on: macos-15-intel
     timeout-minutes: 90
     steps:
       - name: Checkout repository
@@ -344,6 +345,10 @@ jobs:
           kotlin-native: "true"
 
       - name: Build the unsigned IPA
+        env:
+          # Kotlin/Native release linking runs in Gradle's JVM; keep its peak memory within this runner's RAM.
+          GRADLE_OPTS: >-
+            -Dorg.gradle.jvmargs="-Xmx8g -Dfile.encoding=UTF-8"
         run: iosApp/scripts/package-ios.sh device dist/zhihu-hyperion-ios-arm64-unsigned.ipa
 
       - name: Upload iOS package
