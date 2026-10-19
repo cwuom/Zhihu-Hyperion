@@ -118,6 +118,7 @@ URL 解析集中在 `resolveContent()`。支持知乎问题、回答、文章、
 - 非默认收藏夹可从文件夹菜单删除并需要二次确认，默认收藏夹不提供删除入口；删除当前收藏夹后回退到默认收藏夹或列表中的第一个。
 | `startDestination` | 应用启动默认页面 | 主 pager 初始页 | 只允许选择已显示的底栏项 |
 | `bottomBarTapScrollToTop` | 点击底栏回到顶部/刷新 | 选中 tab 再点时触发 scroll/refresh | 双击由 UI 测试用 `&&` 连续 adb 才可靠 |
+| `bottomBarSingleTapRefresh` | 底部导航栏 → 单击回顶并刷新 | 离开顶部时单击当前 tab 也回顶并刷新 | 默认关闭；需开启 `bottomBarTapScrollToTop`；各列表在处理点击时读取，无需重启；参与 WebDAV 同步；tag 为 `appearanceSettings.bottomBarSingleTapRefresh`，支持按同名 key 搜索跳转高亮 |
 | `autoHideTopBar` | 滚动时自动隐藏顶栏 | 主 tab 页顶栏可见性 | 复用底栏滚动信号 |
 | `autoHideBottomBar` | 滚动时自动隐藏底栏 | 主 tab 页底栏可见性 | 只在 `MainTabs` 显示 |
 | `shareActionMode` | 分享操作 | 分享按钮默认行为 | `ask` / `copy` / `share` |

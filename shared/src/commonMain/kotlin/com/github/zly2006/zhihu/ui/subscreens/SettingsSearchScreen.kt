@@ -205,6 +205,7 @@ private val settingsSearchEntries = buildList {
         add(appearanceEntry("appearance.contentEndMarker", "显示内容结束标记", "方便电纸书用户确定内容结束。", PREF_SHOW_CONTENT_END_MARKER, listOf("电纸书", "翻页", "阅读结束", "内容末尾")))
     }
     add(appearanceEntry("appearance.answerDoubleTapAction", "双击回答动作", "设置双击正文后的默认动作。", ANSWER_DOUBLE_TAP_ACTION_PREFERENCE_KEY, listOf("双击")))
+    add(appearanceEntry("appearance.bottomBarSingleTapRefresh", "单击回顶并刷新", "单击底部导航栏当前页面按钮，回到顶部并刷新。", BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, listOf("底部栏", "底栏", "单击刷新", "回到顶部")))
     add(
         appearanceEntry(
             "appearance.bottomBar",

@@ -94,6 +94,7 @@ import com.github.zly2006.zhihu.ui.components.ProgressIndicatorFooter
 import com.github.zly2006.zhihu.ui.components.pageTurnViewportWithGuide
 import com.github.zly2006.zhihu.ui.components.rememberNestedHorizontalPagerConnection
 import com.github.zly2006.zhihu.ui.components.rememberPageTurnTarget
+import com.github.zly2006.zhihu.ui.subscreens.BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY
 import com.github.zly2006.zhihu.viewmodel.feed.FollowRecommendViewModel
 import com.github.zly2006.zhihu.viewmodel.feed.FollowViewModel
 import com.github.zly2006.zhihu.viewmodel.feed.RecentMomentsViewModel
@@ -382,10 +383,12 @@ fun FollowRecommendScreen(
         val action = topLevelReselectAction(
             triggerDelta = scrollToTopTrigger - cachedScrollToTopTrigger,
             isAtTop = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0,
+            refreshOnSingleTap = settings.getBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, false),
         )
         if (isActive) {
             when (action) {
                 TopLevelReselectAction.Refresh -> {
+                    listState.requestScrollToItem(0)
                     viewModel.refresh(environment)
                 }
 
@@ -549,10 +552,12 @@ fun FollowDynamicScreen(
         val action = topLevelReselectAction(
             triggerDelta = scrollToTopTrigger - cachedScrollToTopTrigger,
             isAtTop = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0,
+            refreshOnSingleTap = settings.getBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, false),
         )
         if (isActive) {
             when (action) {
                 TopLevelReselectAction.Refresh -> {
+                    listState.requestScrollToItem(0)
                     viewModel.refresh(environment)
                 }
 

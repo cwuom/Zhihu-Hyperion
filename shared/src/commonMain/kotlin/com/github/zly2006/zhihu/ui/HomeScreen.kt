@@ -123,6 +123,7 @@ import com.github.zly2006.zhihu.ui.components.ProgressIndicatorFooter
 import com.github.zly2006.zhihu.ui.components.feedKeywordExtractionAvailable
 import com.github.zly2006.zhihu.ui.components.pageTurnViewportWithGuide
 import com.github.zly2006.zhihu.ui.components.rememberPageTurnTarget
+import com.github.zly2006.zhihu.ui.subscreens.BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY
 import com.github.zly2006.zhihu.ui.subscreens.CreationEntryPosition
 import com.github.zly2006.zhihu.update.UpdateController
 import com.github.zly2006.zhihu.update.UpdateState
@@ -272,14 +273,20 @@ fun HomeScreen(
 
     val listState = rememberLazyListState()
     var cachedScrollToTopTrigger by remember { mutableIntStateOf(scrollToTopTrigger) }
-    LaunchedEffect(scrollToTopTrigger) {
+    LaunchedEffect(scrollToTopTrigger, isActive) {
+        if (!isActive) {
+            cachedScrollToTopTrigger = scrollToTopTrigger
+            return@LaunchedEffect
+        }
         when (
             topLevelReselectAction(
                 triggerDelta = scrollToTopTrigger - cachedScrollToTopTrigger,
                 isAtTop = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0,
+                refreshOnSingleTap = settings.getBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, false),
             )
         ) {
             TopLevelReselectAction.Refresh -> {
+                listState.requestScrollToItem(0)
                 viewModel.refresh(paginationEnvironment)
             }
 

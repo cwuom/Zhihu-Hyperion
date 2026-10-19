@@ -58,15 +58,18 @@ import com.github.zly2006.zhihu.data.FeedDisplayItem
 import com.github.zly2006.zhihu.icons.AppIcons
 import com.github.zly2006.zhihu.icons.Icon
 import com.github.zly2006.zhihu.navigation.LocalNavigator
+import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.platform.rememberUserMessageSink
 import com.github.zly2006.zhihu.ui.components.AppLoadingIndicator
 import com.github.zly2006.zhihu.ui.components.AppPullToRefreshBox
 import com.github.zly2006.zhihu.ui.components.DraggableRefreshButton
 import com.github.zly2006.zhihu.ui.components.EmptyState
+import com.github.zly2006.zhihu.ui.subscreens.BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY
 import com.github.zly2006.zhihu.viewmodel.CollectionContentViewModel
 import com.github.zly2006.zhihu.viewmodel.CollectionsViewModel
 import com.github.zly2006.zhihu.viewmodel.rememberZhihuApiEnvironment
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import kotlin.random.Random
 
 /**
@@ -85,6 +88,7 @@ fun CollectionBrowseScreen(
     scrollToTopTrigger: Int = 0,
     isActive: Boolean = true,
 ) {
+    val settings = koinInject<SettingsStore>()
     val navigator = LocalNavigator.current
     val environment = rememberZhihuApiEnvironment(allowGuestAccess = false)
     val useLocalCollections = urlToken == null
@@ -163,14 +167,20 @@ fun CollectionBrowseScreen(
             }
         }
     }
-    LaunchedEffect(scrollToTopTrigger) {
+    LaunchedEffect(scrollToTopTrigger, isActive) {
+        if (!isActive) {
+            cachedScrollToTopTrigger = scrollToTopTrigger
+            return@LaunchedEffect
+        }
         when (
             topLevelReselectAction(
                 triggerDelta = scrollToTopTrigger - cachedScrollToTopTrigger,
                 isAtTop = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0,
+                refreshOnSingleTap = settings.getBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, false),
             )
         ) {
             TopLevelReselectAction.Refresh -> {
+                listState.requestScrollToItem(0)
                 if (!useLocalCollections) {
                     collectionsViewModel.refresh(environment)
                     if (randomMode) {

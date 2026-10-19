@@ -77,6 +77,7 @@ import com.github.zly2006.zhihu.icons.AppIcons
 import com.github.zly2006.zhihu.icons.Icon
 import com.github.zly2006.zhihu.navigation.LocalNavigator
 import com.github.zly2006.zhihu.navigation.resolveContent
+import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.platform.isLiteVariant
 import com.github.zly2006.zhihu.platform.rememberUserMessageSink
 import com.github.zly2006.zhihu.ui.components.AppLoadingIndicator
@@ -86,6 +87,7 @@ import com.github.zly2006.zhihu.ui.components.EmptyStateAction
 import com.github.zly2006.zhihu.ui.components.GroupedListItem
 import com.github.zly2006.zhihu.ui.components.pageTurnViewportWithGuide
 import com.github.zly2006.zhihu.ui.components.rememberPageTurnTarget
+import com.github.zly2006.zhihu.ui.subscreens.BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY
 import com.github.zly2006.zhihu.util.formatDailyDate
 import com.github.zly2006.zhihu.util.jsonObject
 import com.github.zly2006.zhihu.util.twoDigitString
@@ -100,6 +102,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.jsonPrimitive
+import org.koin.compose.koinInject
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -117,6 +120,7 @@ fun DailyScreen(
     isActive: Boolean = true,
     innerPadding: PaddingValues = PaddingValues(0.dp),
 ) {
+    val settings = koinInject<SettingsStore>()
     val navigator = LocalNavigator.current
     val httpClient = rememberZhihuApiEnvironment(allowGuestAccess = false).httpClient()
     val uriHandler = LocalUriHandler.current
@@ -221,10 +225,12 @@ fun DailyScreen(
         val action = topLevelReselectAction(
             triggerDelta = scrollToTopTrigger - cachedScrollToTopTrigger,
             isAtTop = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0,
+            refreshOnSingleTap = settings.getBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, false),
         )
         if (isActive) {
             when (action) {
                 TopLevelReselectAction.Refresh -> {
+                    listState.requestScrollToItem(0)
                     doRefresh()
                 }
 

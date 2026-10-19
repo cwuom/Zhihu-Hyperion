@@ -63,6 +63,7 @@ import com.github.zly2006.zhihu.ui.components.PaginatedList
 import com.github.zly2006.zhihu.ui.components.ProgressIndicatorFooter
 import com.github.zly2006.zhihu.ui.components.pageTurnViewportWithGuide
 import com.github.zly2006.zhihu.ui.components.rememberPageTurnTarget
+import com.github.zly2006.zhihu.ui.subscreens.BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY
 import com.github.zly2006.zhihu.util.suspendRunCatching
 import com.github.zly2006.zhihu.viewmodel.deleteOnlineHistory
 import com.github.zly2006.zhihu.viewmodel.feed.OnlineHistoryViewModel
@@ -120,10 +121,12 @@ fun OnlineHistoryScreen(
         val action = topLevelReselectAction(
             triggerDelta = scrollToTopTrigger - cachedScrollToTopTrigger,
             isAtTop = listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0,
+            refreshOnSingleTap = settings.getBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, false),
         )
         if (isActive) {
             when (action) {
                 TopLevelReselectAction.Refresh -> {
+                    listState.requestScrollToItem(0)
                     viewModel.refresh(paginationEnvironment)
                 }
 

@@ -1,6 +1,7 @@
 /*
  * Zhihu-Hyperion - Free & Ad-Free Zhihu client for all platforms.
  * Copyright (C) 2024-2026, zly2006 <i@zly2006.me>
+ * Co-author: eltavine <me@eltavine.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +27,16 @@ class TopLevelReselectActionTest {
     fun returnsNullWhenThereIsNoNewTap() {
         assertNull(topLevelReselectAction(triggerDelta = 0, isAtTop = false))
         assertNull(topLevelReselectAction(triggerDelta = -1, isAtTop = true))
+        assertNull(topLevelReselectAction(triggerDelta = 0, isAtTop = false, refreshOnSingleTap = true))
+        assertNull(topLevelReselectAction(triggerDelta = -1, isAtTop = true, refreshOnSingleTap = true))
+    }
+
+    @Test
+    fun returnsRefreshForSingleTapAwayFromTopWhenEnabled() {
+        assertEquals(
+            TopLevelReselectAction.Refresh,
+            topLevelReselectAction(triggerDelta = 1, isAtTop = false, refreshOnSingleTap = true),
+        )
     }
 
     @Test

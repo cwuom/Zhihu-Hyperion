@@ -48,6 +48,7 @@ import com.github.zly2006.zhihu.ui.components.PREF_SHOW_CONTENT_END_MARKER
 import com.github.zly2006.zhihu.ui.components.PREF_SHOW_PAGE_TURN_FAB
 import com.github.zly2006.zhihu.ui.components.PREF_SHOW_PAGE_TURN_GUIDE
 import com.github.zly2006.zhihu.ui.components.PREF_VOLUME_KEY_PAGE_TURN
+import com.github.zly2006.zhihu.ui.subscreens.BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY
 import com.github.zly2006.zhihu.ui.subscreens.COLLECTION_DIRECT_BROWSE_PREFERENCE_KEY
 import com.github.zly2006.zhihu.ui.subscreens.CONTINUOUS_USAGE_REMINDER_INTERVAL_MINUTES_KEY
 import com.github.zly2006.zhihu.ui.subscreens.DUO3_CARD_LARGE_TITLE_PREFERENCE_KEY
@@ -150,6 +151,7 @@ private val syncedSettings: Map<String, SyncedSettingType> = buildMap {
         "blockZhihuAdPlatform",
         "blockZhihuSchool",
         "bottomBarTapScrollToTop",
+        BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY,
         "buttonSkipAnswer",
         "duo3_all",
         "duo3_article_actions",

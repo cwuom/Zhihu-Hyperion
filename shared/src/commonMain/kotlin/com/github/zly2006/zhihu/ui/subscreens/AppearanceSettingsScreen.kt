@@ -171,6 +171,7 @@ const val START_DESTINATION_PREFERENCE_KEY = "startDestination"
 const val BOTTOM_BAR_ITEMS_PREFERENCE_KEY = "bottom_bar_items"
 const val BOTTOM_BAR_ITEM_ORDER_PREFERENCE_KEY = "bottom_bar_item_order"
 const val COLLECTION_DIRECT_BROWSE_PREFERENCE_KEY = "collectionDirectBrowse"
+const val BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY = "bottomBarSingleTapRefresh"
 const val LANDSCAPE_LIST_DETAIL_PREFERENCE_KEY = "landscapeListDetail"
 const val TOP_LEVEL_BACK_TO_LAUNCHER_PREFERENCE_KEY = "topLevelBackToLauncher"
 const val CREATION_ENTRY_POSITION_PREFERENCE_KEY = "creationEntryPosition"
@@ -1381,15 +1382,50 @@ fun AppearanceSettingsScreen(
                 )
 
                 val tapToRefresh = remember { mutableStateOf(settings.getBoolean("bottomBarTapScrollToTop", true)) }
+                var singleTapRefresh by remember {
+                    mutableStateOf(settings.getBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, false))
+                }
                 SettingItemWithSwitch(
                     title = { Text("点击底部导航栏回到顶部/刷新") },
                     icon = { Icon(AppIcons.VerticalAlignTop, contentDescription = null) },
-                    description = { Text("点击底部导航栏当前页面按钮回到顶部，已在顶部时则刷新页面。双击可直接刷新。") },
+                    description = {
+                        Text(
+                            if (singleTapRefresh) {
+                                "点击底部导航栏当前页面按钮回到顶部并刷新页面。"
+                            } else {
+                                "点击底部导航栏当前页面按钮回到顶部，已在顶部时则刷新页面。双击可直接刷新。"
+                            },
+                        )
+                    },
                     checked = tapToRefresh.value,
                     onCheckedChange = {
                         tapToRefresh.value = it
                         settings.putBoolean("bottomBarTapScrollToTop", it)
                     },
+                )
+
+                SettingItemWithSwitch(
+                    modifier = Modifier.testTag("appearanceSettings.bottomBarSingleTapRefresh"),
+                    title = { Text("单击回顶并刷新") },
+                    icon = { Icon(AppIcons.Refresh, contentDescription = null) },
+                    description = {
+                        Text(
+                            if (tapToRefresh.value) {
+                                "单击底部导航栏当前页面按钮，即使不在顶部也会回顶并刷新。"
+                            } else {
+                                "需先开启“点击底部导航栏回到顶部/刷新”。"
+                            },
+                        )
+                    },
+                    checked = singleTapRefresh,
+                    enabled = tapToRefresh.value,
+                    onCheckedChange = {
+                        singleTapRefresh = it
+                        settings.putBoolean(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, it)
+                    },
+                    settingKey = BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY,
+                    highlightedKey = settingKey,
+                    bringIntoViewRequester = requesterFor(BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY),
                 )
 
                 val autoHideBottomBar = remember { mutableStateOf(settings.getBoolean("autoHideBottomBar", false)) }
