@@ -575,8 +575,7 @@ fun CommentScreen(
             }
         }
     }
-    val commentBackgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
-    val commentInputBarColor = MaterialTheme.colorScheme.surfaceContainer
+    val commentBackgroundColor = MaterialTheme.colorScheme.background
 
     commentPendingDeletion?.let { target ->
         AlertDialog(
@@ -1018,9 +1017,8 @@ fun CommentScreen(
                 // 作者关闭评论后没有可发送的内容，不再保留输入栏。
                 if (viewModel.commentClosedMessage != null) return@Column
                 Surface(
-                    tonalElevation = 2.dp,
                     modifier = Modifier.fillMaxWidth(),
-                    color = commentInputBarColor,
+                    color = commentBackgroundColor,
                 ) {
                     Column {
                         // 回复目标提示栏。

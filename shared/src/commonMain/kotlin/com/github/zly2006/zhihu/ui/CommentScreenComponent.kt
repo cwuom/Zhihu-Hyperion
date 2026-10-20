@@ -151,7 +151,7 @@ fun CommentScreenComponent(
         MyModalBottomSheet(
             onDismissRequest = { dismissRootComments() },
             sheetState = rootSheetState,
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = MaterialTheme.colorScheme.background,
             properties = ModalBottomSheetProperties(
                 shouldDismissOnBackPress = true,
                 shouldDismissOnClickOutside = true,
@@ -192,7 +192,7 @@ fun CommentScreenComponent(
                 childListResetToken += 1
             },
             sheetState = childSheetState,
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = MaterialTheme.colorScheme.background,
             properties = ModalBottomSheetProperties(
                 shouldDismissOnBackPress = true,
                 shouldDismissOnClickOutside = true,
