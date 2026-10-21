@@ -94,6 +94,8 @@ import com.github.zly2006.zhihu.navigation.LocalNavigator
 import com.github.zly2006.zhihu.navigation.MyCollections
 import com.github.zly2006.zhihu.navigation.OnlineHistory
 import com.github.zly2006.zhihu.navigation.TopLevelDestination
+import com.github.zly2006.zhihu.platform.ARTICLE_SWIPE_BACK_PREFERENCE_KEY
+import com.github.zly2006.zhihu.platform.ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY
 import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.platform.isAnswerSwipeSupported
 import com.github.zly2006.zhihu.platform.isInAppBrowserSupported
@@ -918,6 +920,42 @@ fun AppearanceSettingsScreen(
                     settingKey = "titleAutoHide",
                     highlightedKey = settingKey,
                     bringIntoViewRequester = requesterFor("titleAutoHide"),
+                )
+
+                var segmentActionsEnabled by remember {
+                    mutableStateOf(settings.getBoolean(ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY, true))
+                }
+                SettingItemWithSwitch(
+                    modifier = Modifier.testTag("appearance_settings_segment_action_sheet"),
+                    title = { Text("点击划线显示弹窗") },
+                    icon = { Icon(AppIcons.TouchApp, contentDescription = null) },
+                    description = { Text("关闭后保留段评划线，点击时不弹出操作面板；长按选择文字不受影响。仅适用于 Compose 正文。") },
+                    checked = segmentActionsEnabled,
+                    onCheckedChange = {
+                        segmentActionsEnabled = it
+                        settings.putBoolean(ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY, it)
+                    },
+                    settingKey = ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY,
+                    highlightedKey = settingKey,
+                    bringIntoViewRequester = requesterFor(ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY),
+                )
+
+                var articleSwipeBack by remember {
+                    mutableStateOf(settings.getBoolean(ARTICLE_SWIPE_BACK_PREFERENCE_KEY, false))
+                }
+                SettingItemWithSwitch(
+                    modifier = Modifier.testTag("appearance_settings_article_swipe_back"),
+                    title = { Text("全屏右滑返回") },
+                    icon = { Icon(AppIcons.Swipe, contentDescription = null) },
+                    description = { Text("在回答或文章页面从屏幕任意位置向右滑动返回。默认关闭；左右切换回答时优先保留切换手势。仅适用于 Compose 正文。") },
+                    checked = articleSwipeBack,
+                    onCheckedChange = {
+                        articleSwipeBack = it
+                        settings.putBoolean(ARTICLE_SWIPE_BACK_PREFERENCE_KEY, it)
+                    },
+                    settingKey = ARTICLE_SWIPE_BACK_PREFERENCE_KEY,
+                    highlightedKey = settingKey,
+                    bringIntoViewRequester = requesterFor(ARTICLE_SWIPE_BACK_PREFERENCE_KEY),
                 )
 
                 val autoHideArticleBottomBar = remember {

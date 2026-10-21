@@ -84,6 +84,8 @@ URL 解析集中在 `resolveContent()`。支持知乎问题、回答、文章、
 
 ### 外观与阅读体验
 
+`enableSegmentActionSheet` 默认开启，外观设置中的「点击划线显示弹窗」控制 Compose 正文的段评点击操作层；关闭后保留划线与文字选择。`articleSwipeBack` 默认关闭，「全屏右滑返回」在回答和文章的 Compose 页面实时生效，左右切换回答的手势优先。两项都支持设置搜索定位和 WebDAV 同步，对应 test tag 为 `appearance_settings_segment_action_sheet` 和 `appearance_settings_article_swipe_back`。
+
 | preference key | 入口 | 主要影响 | 注意 |
 | --- | --- | --- | --- |
 | `themeMode` | 主题模式 | 应用明暗主题 | 通过 `ThemeManager` 立即影响顶层主题 |

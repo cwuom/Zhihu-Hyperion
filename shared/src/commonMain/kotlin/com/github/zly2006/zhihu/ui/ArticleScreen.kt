@@ -26,6 +26,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -119,6 +121,7 @@ import com.github.zly2006.zhihu.navigation.LocalNavigator
 import com.github.zly2006.zhihu.navigation.Question
 import com.github.zly2006.zhihu.navigation.Topic
 import com.github.zly2006.zhihu.navigation.requestLoginNavigation
+import com.github.zly2006.zhihu.platform.ARTICLE_SWIPE_BACK_PREFERENCE_KEY
 import com.github.zly2006.zhihu.platform.PlatformBackHandler
 import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.platform.isAnswerSwipeSupported
@@ -258,6 +261,9 @@ fun ArticleScreen(
     }
     val useWebView by rememberObservedSetting(settings, ARTICLE_USE_WEBVIEW_PREFERENCE_KEY) {
         getBoolean(ARTICLE_USE_WEBVIEW_PREFERENCE_KEY, false)
+    }
+    val swipeBackEnabled by rememberObservedSetting(settings, ARTICLE_SWIPE_BACK_PREFERENCE_KEY) {
+        getBoolean(ARTICLE_SWIPE_BACK_PREFERENCE_KEY, false)
     }
     val useTiqianMarkdown by rememberObservedSetting(settings, DUO3_TIQIAN_MARKDOWN_PREFERENCE_KEY) {
         getBoolean(DUO3_TIQIAN_MARKDOWN_PREFERENCE_KEY, false)
@@ -428,6 +434,46 @@ fun ArticleScreen(
             detectTapGestures(
                 onDoubleTap = { handleAnswerDoubleTap() },
             )
+        }
+    } else {
+        Modifier
+    }
+
+    val onSwipeBack by rememberUpdatedState {
+        if (isImmersiveMode) {
+            isImmersiveMode = false
+        } else if (articleNavController != null) {
+            articleNavController.popBackStack()
+        } else {
+            navigator.onNavigateBack()
+        }
+    }
+    val swipeBackModifier = if (
+        swipeBackEnabled && pageTurnActive &&
+        !(useWebView && isLegacyWebViewSupported) &&
+        !(article.type == ArticleType.Answer && answerSwitchMode == "horizontal")
+    ) {
+        Modifier.pointerInput(article.type, article.id) {
+            awaitEachGesture {
+                val down = awaitFirstDown(requireUnconsumed = false)
+                val threshold = maxOf(96.dp.toPx(), size.width * 0.25f)
+                var dragging = false
+                while (true) {
+                    val event = awaitPointerEvent()
+                    val change = event.changes.singleOrNull() ?: return@awaitEachGesture
+                    if (change.id != down.id || change.isConsumed) return@awaitEachGesture
+                    val displacement = change.position - down.position
+                    if (!dragging && displacement.getDistance() > viewConfiguration.touchSlop) {
+                        if (displacement.x <= kotlin.math.abs(displacement.y) * 1.5f) return@awaitEachGesture
+                        dragging = true
+                    }
+                    if (dragging) change.consume()
+                    if (!change.pressed) {
+                        if (dragging && displacement.x >= threshold) onSwipeBack()
+                        return@awaitEachGesture
+                    }
+                }
+            }
         }
     } else {
         Modifier
@@ -1137,6 +1183,7 @@ fun ArticleScreen(
         modifier = Modifier
             .fillMaxSize()
             .testTag("article_screen_root")
+            .then(swipeBackModifier)
             .then(answerDoubleTapModifier),
     ) {
         // 根据模式渲染

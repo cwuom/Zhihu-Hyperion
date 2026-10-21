@@ -56,6 +56,8 @@ import com.github.zly2006.zhihu.navigation.LocalNavigator
 import com.github.zly2006.zhihu.navigation.NavDestination
 import com.github.zly2006.zhihu.navigation.Notification
 import com.github.zly2006.zhihu.notification.NotificationType
+import com.github.zly2006.zhihu.platform.ARTICLE_SWIPE_BACK_PREFERENCE_KEY
+import com.github.zly2006.zhihu.platform.ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY
 import com.github.zly2006.zhihu.platform.MACOS_QUIT_ON_WINDOW_CLOSE_PREFERENCE_KEY
 import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.platform.isAnswerSwipeSupported
@@ -205,6 +207,8 @@ private val settingsSearchEntries = buildList {
         add(appearanceEntry("appearance.contentEndMarker", "显示内容结束标记", "方便电纸书用户确定内容结束。", PREF_SHOW_CONTENT_END_MARKER, listOf("电纸书", "翻页", "阅读结束", "内容末尾")))
     }
     add(appearanceEntry("appearance.answerDoubleTapAction", "双击回答动作", "设置双击正文后的默认动作。", ANSWER_DOUBLE_TAP_ACTION_PREFERENCE_KEY, listOf("双击")))
+    add(appearanceEntry("appearance.segmentActionSheet", "点击划线显示弹窗", "保留段评划线，控制点击时是否弹出操作面板。", ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY, listOf("段评", "误触", "划线弹窗")))
+    add(appearanceEntry("appearance.articleSwipeBack", "全屏右滑返回", "在回答或文章页面向右滑动返回，默认关闭。", ARTICLE_SWIPE_BACK_PREFERENCE_KEY, listOf("返回手势", "全屏滑动", "退出阅读")))
     add(appearanceEntry("appearance.bottomBarSingleTapRefresh", "单击回顶并刷新", "单击底部导航栏当前页面按钮，回到顶部并刷新。", BOTTOM_BAR_SINGLE_TAP_REFRESH_PREFERENCE_KEY, listOf("底部栏", "底栏", "单击刷新", "回到顶部")))
     add(
         appearanceEntry(

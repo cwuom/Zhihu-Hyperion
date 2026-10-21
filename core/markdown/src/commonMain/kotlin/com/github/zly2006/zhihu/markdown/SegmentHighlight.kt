@@ -53,8 +53,11 @@ import com.github.zly2006.zhihu.data.SegmentInfoMeta
 import com.github.zly2006.zhihu.icons.AppIcons
 import com.github.zly2006.zhihu.icons.Icon
 import com.github.zly2006.zhihu.navigation.SegmentCommentHolder
+import com.github.zly2006.zhihu.platform.ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY
+import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.platform.rememberPlainTextClipboard
 import com.github.zly2006.zhihu.ui.components.MyModalBottomSheet
+import com.github.zly2006.zhihu.ui.components.rememberObservedSetting
 import com.github.zly2006.zhihu.util.SegmentHighlightSpan
 import com.github.zly2006.zhihu.util.json
 import com.github.zly2006.zhihu.util.suspendRunCatching
@@ -169,6 +172,10 @@ internal fun SegmentHighlightInteractionHost(
     content: @Composable () -> Unit,
 ) {
     val environment = koinInject<ZhihuApiEnvironment>()
+    val settings = koinInject<SettingsStore>()
+    val actionsEnabled by rememberObservedSetting(settings, ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY) {
+        getBoolean(ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY, true)
+    }
     val copyPlainText = rememberPlainTextClipboard()
     val coroutineScope = rememberCoroutineScope()
     val metaStates = remember { mutableStateMapOf<String, SegmentInfoMeta>() }
@@ -185,15 +192,16 @@ internal fun SegmentHighlightInteractionHost(
     }
 
     CompositionLocalProvider(
-        LocalOnSegmentHighlightClick provides onSegmentHighlightClick,
+        LocalOnSegmentHighlightClick provides onSegmentHighlightClick.takeIf { actionsEnabled },
         content = content,
     )
 
     val selectedKey = selectedHighlight?.first
     val selected = selectedHighlight?.second
     val selectedMeta = selectedKey?.let(metaStates::get) ?: selected?.meta
-    LaunchedEffect(selected, selectedMeta) {
-        if (selected == null || selectedKey == null || selectedMeta == null) {
+    LaunchedEffect(selected, selectedMeta, actionsEnabled) {
+        if (!actionsEnabled || selected == null || selectedKey == null || selectedMeta == null) {
+            if (!actionsEnabled) selectedHighlight = null
             showSegmentActionSheet(null)
             return@LaunchedEffect
         }

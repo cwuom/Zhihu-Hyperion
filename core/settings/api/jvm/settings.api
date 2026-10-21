@@ -34,6 +34,11 @@ public final class com/github/zly2006/zhihu/platform/NoopSettingsStoreKt {
 	public static final fun noopSettingsStore ()Lcom/github/zly2006/zhihu/platform/SettingsStore;
 }
 
+public final class com/github/zly2006/zhihu/platform/ReadingInteractionPreferencesKt {
+	public static final field ARTICLE_SWIPE_BACK_PREFERENCE_KEY Ljava/lang/String;
+	public static final field ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY Ljava/lang/String;
+}
+
 public abstract interface class com/github/zly2006/zhihu/platform/SettingsStore {
 	public abstract fun contains (Ljava/lang/String;)Z
 	public abstract fun getBoolean (Ljava/lang/String;Z)Z

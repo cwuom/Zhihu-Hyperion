@@ -30,6 +30,8 @@ import com.github.zly2006.zhihu.data.QUESTION_ANSWER_THRESHOLD_PREFERENCE_KEY
 import com.github.zly2006.zhihu.data.QUESTION_FOLLOWERS_THRESHOLD_PREFERENCE_KEY
 import com.github.zly2006.zhihu.data.VIDEO_FOLLOWERS_THRESHOLD_PREFERENCE_KEY
 import com.github.zly2006.zhihu.data.VIDEO_VOTE_THRESHOLD_PREFERENCE_KEY
+import com.github.zly2006.zhihu.platform.ARTICLE_SWIPE_BACK_PREFERENCE_KEY
+import com.github.zly2006.zhihu.platform.ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY
 import com.github.zly2006.zhihu.platform.MACOS_QUIT_ON_WINDOW_CLOSE_PREFERENCE_KEY
 import com.github.zly2006.zhihu.platform.SettingsStore
 import com.github.zly2006.zhihu.theme.DUO3_TIQIAN_MARKDOWN_PREFERENCE_KEY
@@ -137,6 +139,8 @@ private val syncedSettings: Map<String, SyncedSettingType> = buildMap {
         LANDSCAPE_LIST_DETAIL_PREFERENCE_KEY,
         MACOS_QUIT_ON_WINDOW_CLOSE_PREFERENCE_KEY,
         ARTICLE_USE_WEBVIEW_PREFERENCE_KEY,
+        ARTICLE_SWIPE_BACK_PREFERENCE_KEY,
+        ENABLE_SEGMENT_ACTION_SHEET_PREFERENCE_KEY,
         PREF_PAGE_TURN_SWITCH_ANSWER,
         PREF_SHOW_CONTENT_END_MARKER,
         PREF_SHOW_PAGE_TURN_FAB,
