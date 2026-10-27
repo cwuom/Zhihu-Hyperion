@@ -17,12 +17,22 @@
  */
 
 import com.github.zly2006.zhihu.buildlogic.javafx
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 plugins {
     id("zhihu.kmp.library")
     id("zhihu.kmp.compose")
     id("zhihu.kmp.android.variants")
     alias(libs.plugins.kotlin.serialization)
+}
+
+// 液态玻璃的桌面依赖使用 Java 21 字节码，测试运行时不能随 Gradle 的 Java 17 启动环境变化。
+tasks.named<Test>("jvmTest") {
+    javaLauncher.set(
+        javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        },
+    )
 }
 
 // 评论表情和 iOS/macOS 应用包里复制的是同一份 misc/ 文件；桌面版放进 classpath，安装包从任意工作目录启动都能读到。
