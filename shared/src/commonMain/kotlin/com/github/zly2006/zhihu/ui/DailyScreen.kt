@@ -33,7 +33,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -128,13 +127,12 @@ fun DailyScreen(
     val userMessages = rememberUserMessageSink()
     var showDatePicker by remember { mutableStateOf(false) }
     var openingStoryId by remember { mutableStateOf<Long?>(null) }
-    var missingOriginStoryUrl by remember { mutableStateOf<String?>(null) }
     var pendingDateSelection by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val pageTurnTarget = rememberPageTurnTarget(
         listState = listState,
-        enabled = isActive && (isLiteVariant || !showDatePicker) && missingOriginStoryUrl == null,
+        enabled = isActive && (isLiteVariant || !showDatePicker),
     )
     var cachedScrollToTopTrigger by remember { mutableIntStateOf(scrollToTopTrigger) }
 
@@ -208,7 +206,10 @@ fun DailyScreen(
                     if (destination != null) {
                         navigator.onNavigate(destination)
                     } else {
-                        missingOriginStoryUrl = url
+                        // “瞎扯”等日报合辑的 originUrl 是 /question/None/answer/None，
+                        // 没有唯一原文；打开完整日报，不能任选正文中的一条回答替代合辑。
+                        // https://github.com/eltavine/Zhihu-Hyperion/issues/68
+                        uriHandler.openUri(url)
                     }
                 } catch (e: CancellationException) {
                     throw e
@@ -265,27 +266,6 @@ fun DailyScreen(
         ) {
             DatePicker(state = datePickerState)
         }
-    }
-
-    missingOriginStoryUrl?.let { storyUrl ->
-        AlertDialog(
-            onDismissRequest = { missingOriginStoryUrl = null },
-            icon = { Icon(AppIcons.LinkOff, contentDescription = null) },
-            text = { Text("由于知乎的 Bug，无法找到原文") },
-            confirmButton = {
-                TextButton(onClick = {
-                    missingOriginStoryUrl = null
-                    uriHandler.openUri(storyUrl)
-                }) {
-                    Text("在浏览器中打开")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { missingOriginStoryUrl = null }) {
-                    Text("知道了")
-                }
-            },
-        )
     }
 
     // 分段列表项是 surface 色，放在 surfaceContainer 底色上才能看出分组，与设置页一致。
