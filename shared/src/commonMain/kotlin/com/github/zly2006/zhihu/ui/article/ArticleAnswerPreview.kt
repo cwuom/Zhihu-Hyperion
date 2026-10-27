@@ -54,6 +54,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.github.zly2006.zhihu.data.VoteUpState
+import com.github.zly2006.zhihu.glass.glassBackdropSource
+import com.github.zly2006.zhihu.glass.isLiquidGlassSupported
+import com.github.zly2006.zhihu.glass.rememberGlassBackdrop
 import com.github.zly2006.zhihu.icons.AppIcons
 import com.github.zly2006.zhihu.icons.Icon
 import com.github.zly2006.zhihu.markdown.RenderMarkdown
@@ -63,11 +67,20 @@ import com.github.zly2006.zhihu.viewmodel.ArticleViewModel.CachedAnswerContent
 /** 渲染水平回答切换时的缓存内容预览。 */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun CachedAnswerPreview(cached: CachedAnswerContent, useTiqianMarkdown: Boolean) {
+internal fun CachedAnswerPreview(
+    cached: CachedAnswerContent,
+    useTiqianMarkdown: Boolean,
+    liquidGlassEnabled: Boolean,
+    useDuo3ArticleActions: Boolean,
+) {
+    val glassBackdrop = if (liquidGlassEnabled && isLiquidGlassSupported && !useDuo3ArticleActions) {
+        rememberGlassBackdrop(MaterialTheme.colorScheme.background)
+    } else {
+        null
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = RectangleShape,
@@ -76,6 +89,7 @@ internal fun CachedAnswerPreview(cached: CachedAnswerContent, useTiqianMarkdown:
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
                     .background(MaterialTheme.colorScheme.background),
             ) {
                 Text(
@@ -88,54 +102,70 @@ internal fun CachedAnswerPreview(cached: CachedAnswerContent, useTiqianMarkdown:
             }
         },
         bottomBar = {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
+            if (!useDuo3ArticleActions) {
+                ArticleFloatingActionBar(
+                    voteUpState = VoteUpState.Neutral,
+                    voteUpCount = cached.voteUpCount,
+                    commentCount = cached.commentCount,
+                    isFavorited = false,
+                    onVoteUpStateChange = {},
+                    onShowComments = {},
+                    onShowCollection = {},
+                    onShowActions = {},
+                    glassBackdrop = glassBackdrop,
+                )
+            } else {
+                Column(Modifier.padding(horizontal = 16.dp)) {
                     Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(color = Color(0xFF40B6F6)),
-                        horizontalArrangement = Arrangement.Start,
+                            .fillMaxWidth()
+                            .height(36.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50))
+                                .background(color = Color(0xFF40B6F6)),
+                            horizontalArrangement = Arrangement.Start,
+                        ) {
+                            Button(
+                                onClick = {},
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF40B6F6),
+                                    contentColor = Color.Black,
+                                ),
+                                shape = RectangleShape,
+                                contentPadding = PaddingValues(horizontal = 0.dp),
+                            ) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(AppIcons.ThumbUp, "赞同")
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(text = cached.voteUpCount.toString())
+                            }
+                        }
                         Button(
                             onClick = {},
+                            contentPadding = PaddingValues(horizontal = 8.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF40B6F6),
-                                contentColor = Color.Black,
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                             ),
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(horizontal = 0.dp),
                         ) {
+                            Icon(AppIcons.Comment, contentDescription = "评论")
                             Spacer(modifier = Modifier.width(4.dp))
-                            Icon(AppIcons.ThumbUp, "赞同")
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = cached.voteUpCount.toString())
+                            Text(text = "${cached.commentCount}")
                         }
                     }
-                    Button(
-                        onClick = {},
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        ),
-                    ) {
-                        Icon(AppIcons.Comment, contentDescription = "评论")
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = "${cached.commentCount}")
-                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                Spacer(modifier = Modifier.height(16.dp))
             }
         },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .glassBackdropSource(glassBackdrop)
+                .padding(horizontal = 16.dp)
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                     end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
@@ -210,7 +240,7 @@ internal fun CachedAnswerPreview(cached: CachedAnswerContent, useTiqianMarkdown:
                     footer = {},
                 )
             }
-            Spacer(modifier = Modifier.height((16 + 36).dp))
+            Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
         }
     }
 }

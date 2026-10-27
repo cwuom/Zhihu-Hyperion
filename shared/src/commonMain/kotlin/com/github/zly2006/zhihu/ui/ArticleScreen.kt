@@ -141,6 +141,7 @@ import com.github.zly2006.zhihu.ui.article.AigcFlagSheet
 import com.github.zly2006.zhihu.ui.article.AnswerDoubleTapAction
 import com.github.zly2006.zhihu.ui.article.AnswerEndorsementChip
 import com.github.zly2006.zhihu.ui.article.ArticleActionsMenu
+import com.github.zly2006.zhihu.ui.article.ArticleFloatingActionBar
 import com.github.zly2006.zhihu.ui.article.ArticleSummarySheet
 import com.github.zly2006.zhihu.ui.article.ArticleVideoAttachmentContent
 import com.github.zly2006.zhihu.ui.article.CachedAnswerPreview
@@ -148,16 +149,13 @@ import com.github.zly2006.zhihu.ui.article.rememberArticleAnswerNavigationState
 import com.github.zly2006.zhihu.ui.article.rememberArticleBottomBarState
 import com.github.zly2006.zhihu.ui.article.rememberArticleTopBarState
 import com.github.zly2006.zhihu.ui.article.rememberBottomBarAvoidingBringIntoViewSpec
-import com.github.zly2006.zhihu.ui.article.voteUpNeutralContent
 import com.github.zly2006.zhihu.ui.article.voteUpNeutralContentDuo3
 import com.github.zly2006.zhihu.ui.components.ANSWER_SWITCH_SENSITIVITY_PREFERENCE_KEY
-import com.github.zly2006.zhihu.ui.components.ActionToggleButton
 import com.github.zly2006.zhihu.ui.components.AnswerHorizontalOverscroll
 import com.github.zly2006.zhihu.ui.components.AnswerPreview
 import com.github.zly2006.zhihu.ui.components.AnswerVerticalOverscroll
 import com.github.zly2006.zhihu.ui.components.AppLoadingIndicator
 import com.github.zly2006.zhihu.ui.components.AuthorBadge
-import com.github.zly2006.zhihu.ui.components.BottomFloatingToolbar
 import com.github.zly2006.zhihu.ui.components.CollectionDialogComponent
 import com.github.zly2006.zhihu.ui.components.ContentEndMarker
 import com.github.zly2006.zhihu.ui.components.DEFAULT_ANSWER_SWITCH_SENSITIVITY
@@ -703,47 +701,17 @@ fun ArticleScreen(
                     fun ActionBarContent() {
                         if (!useDuo3ArticleActions) {
                             // ── 主视觉：Expressive 浮动操作栏 ─────────────────────
-                            BottomFloatingToolbar(glassBackdrop = glassBackdrop) {
-                                val voteColor = voteUpNeutralContent()
-                                ActionToggleButton(
-                                    checked = viewModel.voteUpState == VoteUpState.Up,
-                                    onCheckedChange = { checked ->
-                                        viewModel.toggleVoteUp(environment, if (checked) VoteUpState.Up else VoteUpState.Neutral)
-                                    },
-                                    icon = { Icon(if (viewModel.voteUpState == VoteUpState.Up) AppIcons.ThumbUpFilled else AppIcons.ThumbUp, "赞同") },
-                                    label = viewModel.voteUpCount.toString(),
-                                    checkedContentColor = voteColor,
-                                )
-                                ActionToggleButton(
-                                    checked = viewModel.voteUpState == VoteUpState.Down,
-                                    onCheckedChange = { checked ->
-                                        viewModel.toggleVoteUp(environment, if (checked) VoteUpState.Down else VoteUpState.Neutral)
-                                    },
-                                    icon = { Icon(if (viewModel.voteUpState == VoteUpState.Down) AppIcons.ThumbDownFilled else AppIcons.ThumbDown, "反对") },
-                                    checkedContentColor = voteColor,
-                                )
-                                TextButton(
-                                    onClick = { showComments = true },
-                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
-                                    contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
-                                ) {
-                                    Icon(AppIcons.Comment, contentDescription = "评论")
-                                    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                                    Text(text = "${viewModel.commentCount}")
-                                }
-                                ActionToggleButton(
-                                    checked = viewModel.isFavorited,
-                                    // 收藏要选收藏夹，点击总是打开收藏夹列表，选中态只反映结果。
-                                    onCheckedChange = { showCollectionDialog = true },
-                                    icon = {
-                                        Icon(if (viewModel.isFavorited) AppIcons.BookmarkFilled else AppIcons.Bookmark, contentDescription = "收藏")
-                                    },
-                                    checkedContentColor = MaterialTheme.colorScheme.tertiary,
-                                )
-                                IconButton(onClick = { showActionsMenu = true }) {
-                                    Icon(AppIcons.MoreVert, contentDescription = "更多选项")
-                                }
-                            }
+                            ArticleFloatingActionBar(
+                                voteUpState = viewModel.voteUpState,
+                                voteUpCount = viewModel.voteUpCount,
+                                commentCount = viewModel.commentCount,
+                                isFavorited = viewModel.isFavorited,
+                                onVoteUpStateChange = { viewModel.toggleVoteUp(environment, it) },
+                                onShowComments = { showComments = true },
+                                onShowCollection = { showCollectionDialog = true },
+                                onShowActions = { showActionsMenu = true },
+                                glassBackdrop = glassBackdrop,
+                            )
                         } else {
                             // ── duo3：药丸式动画投票与操作区 ────────────────────
                             Row(
@@ -1208,10 +1176,24 @@ fun ArticleScreen(
                 onNavigatePrevious = answerNavigationState::navigateToPrevious,
                 onNavigateNext = answerNavigationState::navigateToNext,
                 previousContent = nav?.previousAnswer?.let { cached ->
-                    { CachedAnswerPreview(cached, useTiqianMarkdown) }
+                    {
+                        CachedAnswerPreview(
+                            cached,
+                            useTiqianMarkdown = useTiqianMarkdown,
+                            liquidGlassEnabled = liquidGlassEnabled,
+                            useDuo3ArticleActions = useDuo3ArticleActions,
+                        )
+                    }
                 },
                 nextContent = nav?.nextAnswer?.let { cached ->
-                    { CachedAnswerPreview(cached, useTiqianMarkdown) }
+                    {
+                        CachedAnswerPreview(
+                            cached,
+                            useTiqianMarkdown = useTiqianMarkdown,
+                            liquidGlassEnabled = liquidGlassEnabled,
+                            useDuo3ArticleActions = useDuo3ArticleActions,
+                        )
+                    }
                 },
                 answerSwitchSensitivity = answerSwitchSensitivity,
             ) {
