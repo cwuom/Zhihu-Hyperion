@@ -319,6 +319,7 @@ fun ZhihuMain(
     val readingPlayer = rememberReadingPlayerController()
     val readingPlayerState by readingPlayer.state
     val settings = koinInject<SettingsStore>()
+    val accountState = rememberAccountSettingsAccountState()
     val creationEntryPosition by rememberObservedSetting(settings, CREATION_ENTRY_POSITION_PREFERENCE_KEY) {
         val stored = getString(CREATION_ENTRY_POSITION_PREFERENCE_KEY, CreationEntryPosition.Floating.key)
         CreationEntryPosition.entries.firstOrNull { it.key == stored } ?: CreationEntryPosition.Floating
@@ -512,7 +513,7 @@ fun ZhihuMain(
     var currentMainTabDestination by remember { mutableStateOf(startDestination) }
     val isAccountSurface = currentMainTabDestination == Account
 
-    PlatformBackHandler(enabled = navEntry != null && !showMainNavigation && !showDetailPane) {
+    PlatformBackHandler(enabled = navEntry != null && navController.previousBackStackEntry != null && !showMainNavigation && !showDetailPane) {
         navController.popBackStack()
     }
     PlatformBackHandler(enabled = showDetailPane) {
@@ -534,8 +535,14 @@ fun ZhihuMain(
 
     LaunchedEffect(navController) {
         loginNavigationRequestFlow.collect {
+            if (navController.currentBackStackEntry?.destination?.hasRoute<Login>() == true && navController.previousBackStackEntry == null) {
+                return@collect
+            }
             navController.navigate(Login) {
                 launchSingleTop = true
+                if (!accountState.value.login && settings.getBoolean("loginForRecommendation", true)) {
+                    popUpTo(navController.graph.id) { inclusive = false }
+                }
             }
         }
     }
@@ -910,12 +917,19 @@ fun ZhihuMain(
                                     )
                                 }
                                 composable<Login> {
-                                    // 与主页自动打开登录页的条件相反：只有离开后主页不会立刻再把登录页打开时才提供返回。
-                                    val canLeave = rememberAccountSettingsAccountState().value.login ||
-                                        !settings.getBoolean("loginForRecommendation", true)
+                                    val canNavigateBack = navController.previousBackStackEntry != null
                                     LoginScreen(
-                                        onLoginComplete = { navController.popBackStack() },
-                                        onNavigateBack = if (canLeave) ({ navController.popBackStack() }) else null,
+                                        onLoginComplete = {
+                                            if (navController.previousBackStackEntry == null) {
+                                                navController.navigate(MainTabs) {
+                                                    popUpTo<Login> { inclusive = true }
+                                                    launchSingleTop = true
+                                                }
+                                            } else {
+                                                navController.popBackStack()
+                                            }
+                                        },
+                                        onNavigateBack = if (canNavigateBack) ({ navController.popBackStack() }) else null,
                                     )
                                 }
                                 composable<Question> { navEntry ->

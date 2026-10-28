@@ -24,6 +24,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -105,7 +106,7 @@ private const val LOGIN_NOTICES_ACCEPTED_KEY = "loginNoticesAccepted"
  * 首次登录前依次确认 [loginNotices] 中的声明，然后选择登录方式；确认过的声明之后不再出现。
  *
  * 声明页之间可以返回上一页；第一页和登录方式页的返回交给导航，与其他页面一致。
- * [onNavigateBack] 为 null 表示离开登录页没有去处（未登录且推荐必须登录时，主页会立刻再打开登录页），不显示返回按钮。
+ * [onNavigateBack] 为 null 表示没有可返回的应用页面，隐藏返回按钮，系统返回交给宿主处理
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,6 +132,7 @@ fun LoginScreen(
     Column(
         Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .safeDrawingPadding(),
     ) {
         // 没有返回按钮时也保留顶栏高度，声明页之间切换时内容不上下跳。
