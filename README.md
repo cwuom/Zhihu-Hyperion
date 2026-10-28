@@ -13,13 +13,16 @@
 
 [下载](#下载) · [功能一览](#功能一览) · [隐私](#隐私) · [从源码构建](#从源码构建) · [致谢与许可](#致谢与许可)
 
+
 </div>
+
+**本项目基于 [zly2006](https://github.com/zly2006) 的 [Zhihu++](https://github.com/zly2006/zhihu-plus-plus) 开发，以 AGPL-3.0-only 开源。**
+
 
 Zhihu-Hyperion 是一个第三方知乎客户端。它把广告、推广软文、推销带货和盐选专栏挡在门外，用不到 5 MB 的安装包提供完整的阅读、互动与创作体验，再用本地推荐、AI 总结和智能过滤，把信息流的主导权交还给你。
 
 名字取自希腊神话中的光明之神许珀里翁（Hyperion）。图标是一只头顶光环的猫，由 [OukaroMF](https://github.com/OukaroMF) 设计。
 
-本项目基于 zly2006 的 [Zhihu++](https://github.com/zly2006/zhihu-plus-plus) 开发，以 AGPL-3.0-only 开源。
 
 ## 为什么选择 Zhihu-Hyperion
 
